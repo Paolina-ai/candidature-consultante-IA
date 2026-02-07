@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paolina | Future Consultante IA @ Open2Europe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        :root {
+            --brand-navy: #1e1b4b;
+            --brand-orange: #f47b5f;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #1e1b4b;
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+
+        .bg-gradient-main {
+            background: linear-gradient(135deg, #1e1b4b 0%, #f47b5f 100%);
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #1e1b4b 0%, #f47b5f 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+
+        .bento-card {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            height: 100%;
+        }
+
+        .bento-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.01), 0 8px 10px -6px rgb(0 0 0 / 0.05);
+            border-color: #f47b5f33;
+        }
+
+        .animate-fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out;
+        }
+
+        .animate-fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- LOGIQUE DU DÉFILEMENT (MARQUEE) --- */
+        .marquee {
+            display: flex;
+            overflow: hidden;
+            user-select: none;
+            gap: 4rem;
+            mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+        }
+
+        .marquee-content {
+            flex-shrink: 0;
+            display: flex;
+            justify-content: space-around;
+            min-width: 100%;
+            gap: 4rem;
+            animation: scroll 40s linear infinite;
+        }
+
+        @keyframes scroll {
+            from { transform: translateX(0); }
+            to { transform: translateX(calc(-100% - 4rem)); }
+        }
+
+        .container-custom {
+            width: 100%;
+            max-width: 1280px;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+
+        /* Styles modales */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background-color: rgba(30, 27, 75, 0.6);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+        
+        .modal-content {
+            background: white;
+            width: 100%;
+            border-radius: 24px;
+            overflow: hidden;
+            transform: scale(0.9) translateY(20px);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        .modal-overlay.active .modal-content {
+            transform: scale(1) translateY(0);
+        }
+
+        .tab-btn-mini.active {
+            background-color: #1e1b4b;
+            color: white;
+        }
+
+        /* Menu Mobile */
+        #mobile-menu {
+            transition: transform 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-slate-100">
+        <div class="container-custom h-16 md:h-20 flex items-center justify-between">
+            <div class="font-extrabold text-base md:text-xl tracking-tighter flex items-center gap-2 text-[#1e1b4b]">
+                <span class="bg-gradient-main w-8 h-8 rounded-lg flex items-center justify-center text-white shrink-0">P</span>
+                <span>PAOLINA <span class="text-[#f47b5f] font-bold">x</span> OPEN2EUROPE</span>
+            </div>
+
+            <!-- Menu Desktop -->
+            <div class="hidden md:flex items-center gap-8">
+                <a href="#bento" class="text-sm font-semibold text-slate-500 hover:text-[#1e1b4b] transition-colors">Expertise IA</a>
+                <a href="#parcours" class="text-sm font-semibold text-slate-500 hover:text-[#1e1b4b] transition-colors">Mon parcours</a>
+                <a href="#contact" class="bg-[#1e1b4b] text-white px-6 py-2.5 rounded-full text-sm font-bold hover:bg-[#f47b5f] transition-all shadow-lg shadow-orange-100/50">
+                    Me contacter
+                </a>
+            </div>
+
+            <!-- Bouton Mobile -->
+            <button onclick="toggleMobileMenu(true)" class="md:hidden p-2 text-[#1e1b4b]">
+                <i data-lucide="menu" class="w-6 h-6"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Overlay Menu Mobile -->
+    <div id="mobile-menu" class="fixed inset-0 z-[60] bg-white translate-x-full md:hidden">
+        <div class="p-6 flex flex-col h-full">
+            <div class="flex items-center justify-between mb-12">
+                <div class="font-extrabold text-lg tracking-tighter flex items-center gap-2 text-[#1e1b4b]">
+                    <span class="bg-gradient-main w-8 h-8 rounded-lg flex items-center justify-center text-white shrink-0">P</span>
+                    <span>MENU</span>
+                </div>
+                <button onclick="toggleMobileMenu(false)" class="p-2">
+                    <i data-lucide="x" class="w-8 h-8 text-[#1e1b4b]"></i>
+                </button>
+            </div>
+            
+            <div class="flex flex-col gap-6">
+                <button onclick="navigateAndClose('bento')" class="text-2xl font-bold text-[#1e1b4b] border-b border-slate-50 pb-4 flex items-center justify-between text-left">
+                    Expertise IA <i data-lucide="chevron-right" class="text-[#f47b5f]"></i>
+                </button>
+                <button onclick="navigateAndClose('parcours')" class="text-2xl font-bold text-[#1e1b4b] border-b border-slate-50 pb-4 flex items-center justify-between text-left">
+                    Mon parcours <i data-lucide="chevron-right" class="text-[#f47b5f]"></i>
+                </button>
+                <button onclick="navigateAndClose('contact')" class="text-2xl font-bold text-[#f47b5f] pt-4 flex items-center justify-between text-left">
+                    Me contacter <i data-lucide="arrow-right-circle"></i>
+                </button>
+            </div>
+
+            <div class="mt-auto pb-10">
+                <p class="text-xs text-slate-400 font-medium uppercase tracking-widest mb-4">Candidature Alternance 2026</p>
+                <div class="flex gap-4">
+                    <a href="https://www.linkedin.com/in/paolina-roiatti-3b0a5a223/" target="_blank" class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-[#1e1b4b] transition-colors">
+                        <i data-lucide="linkedin" class="w-5 h-5"></i>
+                    </a>
+                    <div class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400"><i data-lucide="mail" class="w-5 h-5"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <main class="pt-24 md:pt-32 pb-20">
+        <div class="container-custom">
+            
+            <!-- Hero Section -->
+            <section class="flex flex-col items-center text-center mb-16 md:mb-24 animate-fade-in">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-50 text-[#f47b5f] text-xs md:text-sm font-semibold mb-6">
+                    <i data-lucide="sparkles" class="w-4 h-4"></i>
+                    Candidature Alternance Consultante IA 2026
+                </div>
+                
+                <h1 class="w-full max-w-4xl text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-8 leading-[1.2] md:leading-[1.1] text-gradient">
+                    <span class="block">Optimiser vos workflows,</span>
+                    <span class="block">automatiser vos process,</span>
+                    <span class="block">accompagner sans jargon.</span>
+                </h1>
+                
+                <p class="max-w-2xl text-base md:text-xl text-slate-500 mb-10 leading-relaxed px-4">
+                    Je suis <span class="font-bold text-[#1e1b4b]">Paolina</span>, candidate pour devenir votre consultante IA pour co-construire l'offre d'Open2Europe.
+                </p>
+                
+                <div class="flex items-center justify-center w-full">
+                    <button onclick="document.getElementById('bento').scrollIntoView({behavior: 'smooth'})" class="w-full sm:w-auto bg-[#f47b5f] text-white px-10 py-4 rounded-2xl font-bold text-base md:text-lg hover:scale-105 transition-transform shadow-xl shadow-orange-100">
+                        Lancer l'audit de ma candidature
+                    </button>
+                </div>
+            </section>
+
+            <!-- Titre Section Bento -->
+            <div id="bento" class="flex items-center gap-3 mb-10 animate-fade-in scroll-mt-24 md:scroll-mt-32">
+                <div class="h-8 md:h-10 w-1.5 bg-[#f47b5f] rounded-full"></div>
+                <h2 class="text-2xl md:text-4xl font-extrabold tracking-tight text-[#1e1b4b]">
+                    Toujours un <span class="text-gradient">prompt d'avance</span>
+                </h2>
+            </div>
+
+            <!-- Bento Grid -->
+            <div id="bento-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 animate-fade-in">
+                
+                <!-- Bloc 1 : Veille IA -->
+                <div class="bento-card p-6 md:p-8 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-2 mb-8">
+                            <i data-lucide="eye" class="text-[#f47b5f]"></i>
+                            <h3 class="text-lg md:text-xl font-bold text-[#1e1b4b]">Veille IA</h3>
+                        </div>
+                        
+                        <div class="relative pl-6 space-y-4 mb-8">
+                            <div class="absolute left-[3px] top-2 bottom-2 w-[2px] bg-gradient-to-b from-[#f47b5f] to-slate-200"></div>
+                            <div class="relative flex items-center">
+                                <div class="absolute -left-[27px] w-2 h-2 rounded-full bg-[#f47b5f]"></div>
+                                <span class="text-xs font-black tracking-widest text-[#1e1b4b]">EXPLORER</span>
+                            </div>
+                            <div class="relative flex items-center">
+                                <div class="absolute -left-[27px] w-2 h-2 rounded-full bg-[#f47b5f]"></div>
+                                <span class="text-xs font-black tracking-widest text-[#1e1b4b]">TESTER</span>
+                            </div>
+                            <div class="relative flex items-center">
+                                <div class="absolute -left-[27px] w-2 h-2 rounded-full bg-[#f47b5f]"></div>
+                                <span class="text-xs font-black tracking-widest text-[#1e1b4b]">DÉPLOYER</span>
+                            </div>
+                            <div class="relative flex items-center">
+                                <div class="absolute -left-[27px] w-2 h-2 rounded-full bg-[#f47b5f]"></div>
+                                <span class="text-xs font-black tracking-widest text-[#1e1b4b]">ACCOMPAGNER</span>
+                            </div>
+                        </div>
+
+                        <p class="text-sm text-slate-600 font-medium leading-relaxed mb-6 border-l-2 border-[#f47b5f]/20 pl-4">
+                            Mon objectif : Transformer les nouveautés IA en solutions opérationnelles pour les équipes d'Open2Europe.
+                        </p>
+                        
+                        <button onclick="toggleModal('modalSources', true)" class="mb-8 w-full py-3 px-4 bg-white border-2 border-[#f47b5f] text-[#f47b5f] rounded-xl font-bold text-xs hover:bg-orange-50 transition-colors flex items-center justify-center gap-2">
+                            <i data-lucide="library" class="w-4 h-4"></i>
+                            Découvrir mes sources d'informations
+                        </button>
+                    </div>
+
+                    <div class="p-4 bg-orange-50 border border-orange-100 rounded-2xl">
+                        <span class="block text-[10px] font-bold text-[#f47b5f] uppercase mb-1 tracking-wider uppercase">DERNIÈRE PÉPITE DÉNICHÉE</span>
+                        <div class="flex flex-col gap-0.5">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="zap" class="w-4 h-4 text-[#f47b5f]"></i>
+                                <span class="font-bold text-[#1e1b4b]">Kimi</span>
+                            </div>
+                            <div class="text-[9px] text-slate-500 font-medium ml-6 uppercase tracking-wider">modèle de codage visuel</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bloc 2 : Outils Maîtrisés -->
+                <div class="bento-card p-6 md:p-8 bg-[#1e1b4b] text-white flex flex-col">
+                    <div class="flex items-center gap-2 mb-8">
+                        <i data-lucide="wrench" class="text-[#f47b5f]"></i>
+                        <h3 class="text-lg md:text-xl font-bold">Outils Maîtrisés</h3>
+                    </div>
+                    
+                    <div class="space-y-6 md:space-y-8 flex-1 overflow-y-auto pr-1">
+                        <div>
+                            <div class="text-[10px] font-black text-[#f47b5f] uppercase tracking-widest mb-1">GÉNÉRATION & ANALYSE</div>
+                            <div class="text-[10px] text-slate-400 italic mb-3">Pour transformer la donnée en contenu.</div>
+                            <div class="space-y-3">
+                                <div>
+                                    <div class="text-[9px] text-slate-500 uppercase font-bold mb-1">MODÈLES</div>
+                                    <div class="flex flex-wrap gap-1.5">
+                                        <span class="px-2 py-1 bg-white/10 rounded-lg text-[10px] border border-white/10">ChatGPT</span>
+                                        <span class="px-2 py-1 bg-white/10 rounded-lg text-[10px] border border-white/10">Claude</span>
+                                        <span class="px-2 py-1 bg-white/10 rounded-lg text-[10px] border border-white/10">Gemini</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="text-[9px] text-slate-500 uppercase font-bold mb-1">RECHERCHE & SYNTHÈSE</div>
+                                    <div class="flex flex-wrap gap-1.5">
+                                        <span class="px-2 py-1 bg-white/10 rounded-lg text-[10px] border border-white/10">Perplexity</span>
+                                        <span class="px-2 py-1 bg-white/10 rounded-lg text-[10px] border border-white/10">NotebookLM</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="text-[10px] font-black text-[#f47b5f] uppercase tracking-widest mb-1">AUTOMATISATION & PRODUCTIVITÉ</div>
+                            <div class="text-[10px] text-slate-400 italic mb-3">Pour supprimer les tâches chronophages.</div>
+                            <div class="space-y-3">
+                                <div>
+                                    <div class="text-[9px] text-slate-500 uppercase font-bold mb-1">WORKFLOWS</div>
+                                    <div class="flex flex-wrap gap-1.5">
+                                        <span class="px-2 py-1 bg-white/10 rounded-lg text-[10px] font-bold border border-white/20">Make</span>
+                                        <span class="px-2 py-1 bg-white/10 rounded-lg text-[10px] font-bold border border-white/20">Zapier</span>
+                                        <span class="px-2 py-1 bg-white/5 rounded-lg text-[10px] font-bold border border-dashed border-white/20 flex items-center gap-1 shrink-0">
+                                            <i data-lucide="loader-2" class="w-2.5 h-2.5 animate-spin"></i> n8n
+                                        </span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="text-[9px] text-slate-500 uppercase font-bold mb-1">DATA & APP</div>
+                                    <div class="flex flex-wrap gap-1.5">
+                                        <span class="px-2 py-1 bg-white/10 rounded-lg text-[10px] border border-white/10">Google App Script</span>
+                                        <span class="px-2 py-1 bg-white/10 rounded-lg text-[10px] border border-white/10">Airtable</span>
+                                        <span class="px-2 py-1 bg-white/10 rounded-lg text-[10px] border border-white/10">Softr</span>
+                                        <span class="px-2 py-1 bg-white/10 rounded-lg text-[10px] border border-white/10">Lovable</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="text-[10px] font-black text-[#f47b5f] uppercase tracking-widest mb-1">EXPÉRIMENTATION & IMAGE/VIDÉO</div>
+                            <div class="text-[10px] text-slate-400 italic mb-3">Pour booster la créativité d'Open2Europe.</div>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="px-2 py-1 bg-white/10 rounded-lg text-[10px] border border-white/10">AI Studio</span>
+                                <span class="px-2 py-1 bg-white/10 rounded-lg text-[10px] border border-white/10 text-orange-100">Nana Banana pro</span>
+                                <span class="px-2 py-1 bg-white/10 rounded-lg text-[10px] border border-white/10">DALL-E</span>
+                                <span class="px-2 py-1 bg-white/10 rounded-lg text-[10px] border border-white/10">Flux</span>
+                                <span class="px-2 py-1 bg-white/10 rounded-lg text-[10px] border border-white/10">Kling</span>
+                                <span class="px-2 py-1 bg-white/5 rounded-lg text-[10px] font-bold border border-dashed border-white/20 flex items-center gap-1 shrink-0">
+                                    <i data-lucide="loader-2" class="w-2.5 h-2.5 animate-spin"></i> Midjourney
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bloc 3 : Réalisations -->
+                <div class="bento-card p-6 md:p-8 flex flex-col">
+                    <div class="flex items-center gap-2 mb-8 shrink-0">
+                        <i data-lucide="layers" class="text-[#f47b5f]"></i>
+                        <h3 class="text-lg md:text-xl font-bold text-[#1e1b4b]">Réalisations</h3>
+                    </div>
+
+                    <div class="flex-1 flex flex-col gap-4">
+                        <button onclick="toggleModal('modalWorkflows', true)" class="group flex items-center justify-between p-4 bg-slate-50 border border-slate-100 rounded-2xl hover:border-[#f47b5f]/40 hover:bg-white transition-all text-left">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center text-[#f47b5f] group-hover:scale-110 transition-transform">
+                                    <i data-lucide="zap" class="w-5 h-5"></i>
+                                </div>
+                                <div class="text-sm font-bold text-[#1e1b4b]">Workflows</div>
+                            </div>
+                            <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 group-hover:translate-x-1 transition-transform"></i>
+                        </button>
+
+                        <button onclick="toggleModal('modalGPTs', true)" class="group flex items-center justify-between p-4 bg-slate-50 border border-slate-100 rounded-2xl hover:border-[#f47b5f]/40 hover:bg-white transition-all text-left">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center text-[#f47b5f] group-hover:scale-110 transition-transform">
+                                    <i data-lucide="message-square" class="w-5 h-5"></i>
+                                </div>
+                                <div class="text-sm font-bold text-[#1e1b4b]">GPTs Custom</div>
+                            </div>
+                            <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 group-hover:translate-x-1 transition-transform"></i>
+                        </button>
+
+                        <button onclick="toggleModal('modalNotebook', true)" class="group flex items-center justify-between p-4 bg-slate-50 border border-slate-100 rounded-2xl hover:border-[#f47b5f]/40 hover:bg-white transition-all text-left">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center text-[#f47b5f] group-hover:scale-110 transition-transform">
+                                    <i data-lucide="book-open" class="w-5 h-5"></i>
+                                </div>
+                                <div class="text-sm font-bold text-[#1e1b4b]">NotebookLM</div>
+                            </div>
+                            <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 group-hover:translate-x-1 transition-transform"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Zero Jargon Section -->
+            <div class="mb-24 animate-fade-in">
+                <div class="bento-card p-6 md:p-10">
+                    <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+                        <div>
+                            <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-orange-50 text-[#f47b5f] flex items-center justify-center mb-6">
+                                <i data-lucide="languages"></i>
+                            </div>
+                            <h3 class="text-2xl md:text-3xl font-bold mb-4 md:mb-6 text-[#1e1b4b]">Zone "Zéro Jargon"</h3>
+                            <p class="text-slate-500 text-base md:text-lg leading-relaxed mb-6 md:mb-8">
+                                L’IA est un outil de valeur que si elle est utilisée correctement. Ma conviction : <span class="text-[#1e1b4b] font-bold">la transmission est la clé de la performance</span>.
+                            </p>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="p-4 md:p-6 bg-slate-50 rounded-3xl border border-slate-100 relative">
+                                <span class="absolute -top-3 left-6 px-3 py-1 bg-slate-200 rounded-full text-[10px] font-bold uppercase text-slate-600">Jargon</span>
+                                <p class="text-xs md:text-sm italic text-slate-400">"Nous allons configurer un System Prompt avec du Few-Shot Prompting pour aligner l'inférence du modèle sur votre identité textuelle."</p>
+                            </div>
+                            <div class="flex justify-center py-1">
+                                <i data-lucide="arrow-down" class="text-[#f47b5f] animate-bounce w-5 h-5"></i>
+                            </div>
+                            <div class="p-4 md:p-6 bg-[#1e1b4b] rounded-3xl text-white relative shadow-xl shadow-slate-200">
+                                <span class="absolute -top-3 left-6 px-3 py-1 bg-[#f47b5f] rounded-full text-[10px] font-bold uppercase text-white">Solution</span>
+                                <p class="font-medium text-sm md:text-lg">"On donne quelques exemples de vos meilleurs écrits à l'IA pour qu'elle apprenne à rédiger exactement avec votre style et votre ton."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mon parcours -->
+            <div id="parcours" class="bento-card p-6 md:p-10 scroll-mt-24 md:scroll-mt-32 border-t-4 border-t-[#1e1b4b] animate-fade-in mb-12">
+                <h3 class="text-xl md:text-2xl font-bold mb-10 md:mb-14 flex items-center gap-3 text-[#1e1b4b]">
+                    <i data-lucide="graduation-cap" class="text-[#f47b5f]"></i>
+                    Mon parcours
+                </h3>
+                
+                <div class="grid md:grid-cols-2 gap-12 md:gap-16">
+                    <div>
+                        <h4 class="text-xs font-black uppercase tracking-[0.2em] text-slate-400 mb-8 border-b border-slate-100 pb-2">FORMATIONS</h4>
+                        <div class="space-y-10">
+                            <div class="relative pl-8 border-l-2 border-slate-100">
+                                <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-[#f47b5f] border-4 border-white shadow-sm"></div>
+                                <div class="text-[10px] font-bold text-[#f47b5f] mb-1 uppercase tracking-wider">2025 - 2027</div>
+                                <div class="font-bold text-base md:text-lg text-[#1e1b4b] leading-tight mb-1">Mastère Stratégies e-business</div>
+                                <div class="text-sm font-medium text-slate-500 italic">ESD Paris</div>
+                            </div>
+                            <div class="relative pl-8 border-l-2 border-slate-100">
+                                <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-slate-200 border-4 border-white"></div>
+                                <div class="text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-wider">2023 - 2024</div>
+                                <div class="font-bold text-base md:text-lg text-[#1e1b4b] leading-tight mb-1">BUT 3 Techniques de commercialisation</div>
+                                <div class="text-sm font-medium text-slate-500 italic">UADY, Mexique (Échange universitaire)</div>
+                            </div>
+                            <div class="relative pl-8 border-l-2 border-slate-100">
+                                <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-slate-200 border-4 border-white"></div>
+                                <div class="text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-wider">2021 - 2023</div>
+                                <div class="font-bold text-base md:text-lg text-[#1e1b4b] leading-tight mb-1">BUT 1 & 2 Techniques de commercialisation</div>
+                                <div class="text-sm font-medium text-slate-500 italic">IUT d'Angers</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-xs font-black uppercase tracking-[0.2em] text-slate-400 mb-8 border-b border-slate-100 pb-2">EXPÉRIENCES CLÉS</h4>
+                        <div class="space-y-6">
+                            <div class="p-6 bg-orange-50/40 rounded-3xl border border-orange-100 relative group transition-all hover:bg-orange-50">
+                                <div class="flex justify-between items-start mb-3">
+                                    <h4 class="font-bold text-base md:text-lg text-[#f47b5f] leading-tight">Alternante cheffe de projet SEO/GEO</h4>
+                                    <span class="text-[10px] bg-[#f47b5f] text-white px-3 py-1 rounded-full font-bold uppercase tracking-wider shrink-0">ACTUELLE</span>
+                                </div>
+                                <div class="text-xs font-black text-[#1e1b4b] mb-2 uppercase tracking-widest">Les Sherpas, Paris</div>
+                                <p class="text-xs text-slate-500 leading-relaxed italic">Pilotage global de la stratégie SEO/GEO : recherche d'opportunités, optimisation sémantique assistée par IA et suivi précis de la présence sur les moteurs.</p>
+                            </div>
+                            <div class="p-6 bg-white rounded-3xl border border-slate-100 relative group transition-all hover:border-[#1e1b4b]/20">
+                                <h4 class="font-bold text-base md:text-lg text-[#1e1b4b] leading-tight mb-2">Stagiaire web éditorial</h4>
+                                <div class="text-xs font-black text-slate-400 mb-2 uppercase tracking-widest">CRT Centre-Val de Loire, Orléans</div>
+                                <p class="text-xs text-slate-500 leading-relaxed italic">Création de contenus optimisés SEO.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bouton de validation -->
+            <div class="flex justify-center mb-24 animate-fade-in">
+                <button onclick="document.getElementById('contact').scrollIntoView({behavior: 'smooth'})" class="group flex items-center gap-3 px-8 py-5 bg-[#1e1b4b] text-white rounded-2xl font-bold text-sm md:text-base hover:bg-[#f47b5f] transition-all shadow-xl hover:scale-105 active:scale-95">
+                    <span>Savoir si le profil de Paolina correspond aux attentes d'Open2Europe</span>
+                    <i data-lucide="check-circle" class="w-5 h-5 text-[#f47b5f] group-hover:text-white transition-colors"></i>
+                </button>
+            </div>
+
+            <!-- Footer Marquee -->
+            <div class="mb-24 -mx-6 md:mx-0 overflow-hidden">
+                <div class="marquee py-8">
+                    <div class="marquee-content">
+                        <!-- Traits style badges flottants -->
+                        <div class="flex items-center gap-3 px-6 py-3 bg-white border border-slate-100 rounded-2xl shadow-sm group hover:border-[#f47b5f]/50 transition-all duration-300">
+                            <i data-lucide="zap" class="w-5 h-5 text-[#f47b5f]"></i>
+                            <span class="text-sm md:text-base font-bold text-[#1e1b4b]">Autonome</span>
+                        </div>
+                        <div class="flex items-center gap-3 px-6 py-3 bg-white border border-slate-100 rounded-2xl shadow-sm group hover:border-[#f47b5f]/50 transition-all duration-300">
+                            <i data-lucide="search" class="w-5 h-5 text-[#f47b5f]"></i>
+                            <span class="text-sm md:text-base font-bold text-[#1e1b4b]">Curieuse</span>
+                        </div>
+                        <div class="flex items-center gap-3 px-6 py-3 bg-white border border-slate-100 rounded-2xl shadow-sm group hover:border-[#f47b5f]/50 transition-all duration-300">
+                            <i data-lucide="users" class="w-5 h-5 text-[#f47b5f]"></i>
+                            <span class="text-sm md:text-base font-bold text-[#1e1b4b]">Esprit d'équipe</span>
+                        </div>
+                        <div class="flex items-center gap-3 px-6 py-3 bg-white border border-slate-100 rounded-2xl shadow-sm group hover:border-[#f47b5f]/50 transition-all duration-300">
+                            <i data-lucide="shield-check" class="w-5 h-5 text-[#f47b5f]"></i>
+                            <span class="text-sm md:text-base font-bold text-[#1e1b4b]">Rigoureuse</span>
+                        </div>
+                        <div class="flex items-center gap-3 px-6 py-3 bg-white border border-slate-100 rounded-2xl shadow-sm group hover:border-[#f47b5f]/50 transition-all duration-300">
+                            <i data-lucide="message-circle" class="w-5 h-5 text-[#f47b5f]"></i>
+                            <span class="text-sm md:text-base font-bold text-[#1e1b4b]">À l'écoute</span>
+                        </div>
+                        <div class="flex items-center gap-3 px-6 py-3 bg-white border border-slate-100 rounded-2xl shadow-sm group hover:border-[#f47b5f]/50 transition-all duration-300">
+                            <i data-lucide="lightbulb" class="w-5 h-5 text-[#f47b5f]"></i>
+                            <span class="text-sm md:text-base font-bold text-[#1e1b4b]">Force de proposition</span>
+                        </div>
+                        <div class="flex items-center gap-3 px-6 py-3 bg-white border border-slate-100 rounded-2xl shadow-sm group hover:border-[#f47b5f]/50 transition-all duration-300">
+                            <i data-lucide="graduation-cap" class="w-5 h-5 text-[#f47b5f]"></i>
+                            <span class="text-sm md:text-base font-bold text-[#1e1b4b]">Volonté d'apprendre</span>
+                        </div>
+                        <!-- Duplication -->
+                        <div class="flex items-center gap-3 px-6 py-3 bg-white border border-slate-100 rounded-2xl shadow-sm">
+                            <i data-lucide="zap" class="w-5 h-5 text-[#f47b5f]"></i>
+                            <span class="text-sm md:text-base font-bold text-[#1e1b4b]">Autonome</span>
+                        </div>
+                        <div class="flex items-center gap-3 px-6 py-3 bg-white border border-slate-100 rounded-2xl shadow-sm">
+                            <i data-lucide="search" class="w-5 h-5 text-[#f47b5f]"></i>
+                            <span class="text-sm md:text-base font-bold text-[#1e1b4b]">Curieuse</span>
+                        </div>
+                        <div class="flex items-center gap-3 px-6 py-3 bg-white border border-slate-100 rounded-2xl shadow-sm">
+                            <i data-lucide="users" class="w-5 h-5 text-[#f47b5f]"></i>
+                            <span class="text-sm md:text-base font-bold text-[#1e1b4b]">Esprit d'équipe</span>
+                        </div>
+                        <div class="flex items-center gap-3 px-6 py-3 bg-white border border-slate-100 rounded-2xl shadow-sm">
+                            <i data-lucide="shield-check" class="w-5 h-5 text-[#f47b5f]"></i>
+                            <span class="text-sm md:text-base font-bold text-[#1e1b4b]">Rigoureuse</span>
+                        </div>
+                        <div class="flex items-center gap-3 px-6 py-3 bg-white border border-slate-100 rounded-2xl shadow-sm">
+                            <i data-lucide="message-circle" class="w-5 h-5 text-[#f47b5f]"></i>
+                            <span class="text-sm md:text-base font-bold text-[#1e1b4b]">À l'écoute</span>
+                        </div>
+                        <div class="flex items-center gap-3 px-6 py-3 bg-white border border-slate-100 rounded-2xl shadow-sm">
+                            <i data-lucide="lightbulb" class="w-5 h-5 text-[#f47b5f]"></i>
+                            <span class="text-sm md:text-base font-bold text-[#1e1b4b]">Force de proposition</span>
+                        </div>
+                        <div class="flex items-center gap-3 px-6 py-3 bg-white border border-slate-100 rounded-2xl shadow-sm">
+                            <i data-lucide="graduation-cap" class="w-5 h-5 text-[#f47b5f]"></i>
+                            <span class="text-sm md:text-base font-bold text-[#1e1b4b]">Volonté d'apprendre</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Retour en haut -->
+            <div class="container-custom flex justify-start mb-6 animate-fade-in">
+                <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="group flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-[#f47b5f] transition-colors">
+                    <i data-lucide="arrow-up" class="w-3.5 h-3.5 group-hover:-translate-y-0.5 transition-transform"></i>
+                    Revenir au début
+                </button>
+            </div>
+
+            <!-- SECTION CONTACT -->
+            <section id="contact" class="max-w-4xl mx-auto bento-card p-8 md:p-12 text-center animate-fade-in border-t-4 border-t-[#f47b5f] scroll-mt-24 md:scroll-mt-32">
+                <h3 class="text-2xl md:text-4xl font-extrabold mb-4 text-[#1e1b4b]">Co-construisons votre offre IA</h3>
+                <p class="text-sm md:text-lg text-slate-500 mb-12 max-w-2xl mx-auto">
+                    Prête à créer vos futurs agents IA et à accompagner vos équipes vers une adoption sans jargon. Discutons de vos projets et de ma future contribution chez Open2Europe :
+                </p>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8">
+                    <!-- LinkedIn -->
+                    <a href="https://www.linkedin.com/in/paolina-roiatti-3b0a5a223/" target="_blank" class="flex flex-col items-center gap-4 group p-6 rounded-3xl bg-slate-50 hover:bg-[#1e1b4b] transition-all duration-300">
+                        <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-[#1e1b4b] group-hover:scale-110 transition-transform shadow-sm">
+                            <i data-lucide="linkedin" class="w-7 h-7"></i>
+                        </div>
+                        <div class="text-center">
+                            <span class="block text-[10px] font-black uppercase tracking-widest text-slate-400 group-hover:text-slate-300 mb-1">Linkedin</span>
+                            <span class="text-sm font-bold text-[#1e1b4b] group-hover:text-white">Paolina Roiatti</span>
+                        </div>
+                    </a>
+
+                    <!-- Téléphone -->
+                    <div class="flex flex-col items-center gap-4 p-6 rounded-3xl bg-orange-50/50 transition-all duration-300">
+                        <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-[#f47b5f] shadow-sm">
+                            <i data-lucide="phone" class="w-7 h-7"></i>
+                        </div>
+                        <div class="text-center">
+                            <span class="block text-[10px] font-black uppercase tracking-widest text-[#f47b5f]/60 mb-1">Téléphone</span>
+                            <span class="text-sm font-bold text-[#1e1b4b]">07 83 06 79 94</span>
+                        </div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="flex flex-col items-center gap-4 p-6 rounded-3xl bg-slate-50 transition-all duration-300">
+                        <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-[#1e1b4b] shadow-sm">
+                            <i data-lucide="mail" class="w-7 h-7"></i>
+                        </div>
+                        <div class="text-center">
+                            <span class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">E-mail</span>
+                            <span class="text-sm font-bold text-[#1e1b4b]">roiatti3paolina@gmail.com</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Documents -->
+            <div class="flex flex-wrap justify-center gap-4 mt-12 mb-12 animate-fade-in">
+                <a href="#" class="flex items-center gap-2 px-5 py-2.5 bg-slate-100 text-[#1e1b4b] rounded-xl text-xs font-bold hover:bg-slate-200 transition-colors">
+                    <i data-lucide="file-text" class="w-4 h-4 text-[#f47b5f]"></i>
+                    CV
+                </a>
+                <a href="#" class="flex items-center gap-2 px-5 py-2.5 bg-slate-100 text-[#1e1b4b] rounded-xl text-xs font-bold hover:bg-slate-200 transition-colors">
+                    <i data-lucide="file-signature" class="w-4 h-4 text-[#f47b5f]"></i>
+                    Lettre de motivation
+                </a>
+            </div>
+
+            <!-- Infos Pratiques (NOUVEAU) -->
+            <section class="max-w-4xl mx-auto animate-fade-in mb-24">
+                <div class="flex flex-col items-center gap-6 p-6 md:p-8 bg-white border border-slate-100 rounded-[32px] shadow-sm">
+                    <div class="flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-50 text-[#1e1b4b] text-[10px] font-black uppercase tracking-widest">
+                        <i data-lucide="info" class="w-3.5 h-3.5"></i>
+                        Infos pratiques
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center text-[#f47b5f] shrink-0 shadow-sm">
+                                <i data-lucide="clock" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <span class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Rythme d'alternance</span>
+                                <p class="text-xs md:text-sm font-bold text-[#1e1b4b] leading-relaxed">
+                                    1 jour à l’école / 4 jours en entreprise <br>
+                                    <span class="text-slate-500 font-medium">+ 1 semaine complète à l'école toutes les 4 à 5 semaines.</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-[#1e1b4b] shrink-0 shadow-sm">
+                                <i data-lucide="calendar" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <span class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Disponibilités</span>
+                                <p class="text-xs md:text-sm font-bold text-[#1e1b4b] leading-relaxed">
+                                    À partir de septembre 2026 <br>
+                                    <span class="text-slate-500 font-medium italic">(nous pouvons en discuter selon vos besoins).</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- SYSTEME DE MODALES -->
+
+    <!-- Modale Ready -->
+    <div id="modalReady" class="modal-overlay">
+        <div class="relative w-full max-w-md modal-content shadow-2xl p-8 text-center bg-white">
+            <div class="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-6 text-[#f47b5f]">
+                <i data-lucide="rocket" class="w-10 h-10 animate-bounce"></i>
+            </div>
+            <h3 class="text-xl font-extrabold text-[#1e1b4b] mb-4">Attention !</h3>
+            <p class="text-slate-500 mb-8 leading-relaxed">
+                Vous allez découvrir le profil de votre <span class="text-[#f47b5f] font-bold">future alternante consultante IA</span>... <br>Êtes-vous prêt ?
+            </p>
+            <button onclick="toggleModal('modalReady', false)" class="w-full py-4 bg-[#1e1b4b] text-white rounded-2xl font-bold hover:bg-[#f47b5f] transition-all shadow-lg active:scale-95">
+                Oui !
+            </button>
+        </div>
+    </div>
+
+    <!-- Modale Sources (Restaurée et Nettoyée) -->
+    <div id="modalSources" class="modal-overlay" onclick="handleOverlayClick(event, 'modalSources')">
+        <div class="relative w-full max-w-lg modal-content shadow-2xl flex flex-col">
+            <div class="bg-[#1e1b4b] p-6 text-white flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-3"><i data-lucide="bookmark" class="w-5 h-5 text-white"></i><h3 class="font-bold text-lg">Mes sources d'informations</h3></div>
+                <button onclick="toggleModal('modalSources', false)" class="p-2 hover:bg-white/10 rounded-full transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <div class="p-8 space-y-8 max-h-[70vh] overflow-y-auto text-[#1e1b4b]">
+                <div>
+                    <div class="flex items-center gap-2 mb-4 text-[#f47b5f]"><i data-lucide="mail" class="w-4 h-4"></i><span class="text-[10px] font-black uppercase tracking-widest">NEWSLETTER</span></div>
+                    <ul class="space-y-3 pl-4">
+                        <li class="flex items-center gap-3 text-sm font-medium"><span class="w-1.5 h-1.5 rounded-full bg-slate-200"></span> Superhumain</li>
+                        <li class="flex items-center gap-3 text-sm font-medium"><span class="w-1.5 h-1.5 rounded-full bg-slate-200"></span> Ai Secret</li>
+                        <li class="flex items-center gap-3 text-sm font-medium"><span class="w-1.5 h-1.5 rounded-full bg-slate-200"></span> Contournement</li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2 mb-4 text-[#f47b5f]"><i data-lucide="youtube" class="w-4 h-4"></i><span class="text-[10px] font-black uppercase tracking-widest">YOUTUBE</span></div>
+                    <ul class="space-y-3 pl-4">
+                        <li class="flex items-center gap-3 text-sm font-medium"><span class="w-1.5 h-1.5 rounded-full bg-slate-200"></span> Theyo</li>
+                        <li class="flex items-center gap-3 text-sm font-medium"><span class="w-1.5 h-1.5 rounded-full bg-slate-200"></span> Yassine Sdiri</li>
+                        <li class="flex items-center gap-3 text-sm font-medium"><span class="w-1.5 h-1.5 rounded-full bg-slate-200"></span> Thomas Berton</li>
+                    </ul>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                    <div>
+                        <div class="flex items-center gap-2 mb-4 text-[#f47b5f]"><i data-lucide="users" class="w-4 h-4"></i><span class="text-[10px] font-black uppercase tracking-widest">COMMUNAUTÉ</span></div>
+                        <p class="text-sm font-bold pl-4 text-[#1e1b4b]">Le Club IA</p>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2 mb-4 text-[#f47b5f]"><i data-lucide="mic" class="w-4 h-4"></i><span class="text-[10px] font-black uppercase tracking-widest">PODCAST</span></div>
+                        <p class="text-sm font-bold pl-4 text-[#1e1b4b]">IA x no-code : rejoignez l'avant-garde</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modale Workflows -->
+    <div id="modalWorkflows" class="modal-overlay" onclick="handleOverlayClick(event, 'modalWorkflows')">
+        <div class="relative w-full max-w-2xl modal-content shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="bg-[#1e1b4b] p-6 text-white flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-3"><i data-lucide="zap" class="w-5 h-5 text-[#f47b5f]"></i><h3 class="font-bold">Workflows d'Automatisation</h3></div>
+                <button onclick="toggleModal('modalWorkflows', false)"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <div class="p-1 bg-slate-100 mx-8 mt-6 rounded-xl flex shrink-0">
+                <button onclick="switchWorkflowTab('past')" id="tab-past" class="tab-btn-mini flex-1 py-2 text-[10px] font-bold rounded-lg transition-all active">Ce que j'ai déjà construit</button>
+                <button onclick="switchWorkflowTab('future')" id="tab-future" class="tab-btn-mini flex-1 py-2 text-[10px] font-bold rounded-lg transition-all">Exemples pour Open2Europe</button>
+            </div>
+            <div id="workflow-content" class="p-8 overflow-y-auto space-y-4"></div>
+        </div>
+    </div>
+
+    <!-- Modale GPTs Custom -->
+    <div id="modalGPTs" class="modal-overlay" onclick="handleOverlayClick(event, 'modalGPTs')">
+        <div class="relative w-full max-w-2xl modal-content shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="bg-[#1e1b4b] p-6 text-white flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-3"><i data-lucide="message-square" class="w-5 h-5 text-[#f47b5f]"></i><h3 class="font-bold">Agents GPTs Custom</h3></div>
+                <button onclick="toggleModal('modalGPTs', false)"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <div class="p-1 bg-slate-100 mx-8 mt-6 rounded-xl flex shrink-0">
+                <button onclick="switchGPTTab('past')" id="tab-gpt-past" class="tab-btn-mini flex-1 py-2 text-[10px] font-bold rounded-lg transition-all active">Exemple déjà construit</button>
+                <button onclick="switchGPTTab('future')" id="tab-gpt-future" class="tab-btn-mini flex-1 py-2 text-[10px] font-bold rounded-lg transition-all">Exemple pour Open2Europe</button>
+            </div>
+            <div id="gpt-content" class="p-8 overflow-y-auto space-y-4"></div>
+        </div>
+    </div>
+
+    <!-- Modale NotebookLM -->
+    <div id="modalNotebook" class="modal-overlay" onclick="handleOverlayClick(event, 'modalNotebook')">
+        <div class="relative w-full max-w-2xl modal-content shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="bg-[#1e1b4b] p-6 text-white flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-3"><i data-lucide="book-open" class="w-5 h-5 text-[#f47b5f]"></i><h3 class="font-bold">NotebookLM</h3></div>
+                <button onclick="toggleModal('modalNotebook', false)"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <div class="p-1 bg-slate-100 mx-8 mt-6 rounded-xl flex shrink-0">
+                <button onclick="switchNotebookTab('personal')" id="tab-nb-personal" class="tab-btn-mini flex-1 py-2 text-[10px] font-bold rounded-lg transition-all active">Usages personnels</button>
+                <button onclick="switchNotebookTab('future')" id="tab-nb-future" class="tab-btn-mini flex-1 py-2 text-[10px] font-bold rounded-lg transition-all">Usages Open2Europe</button>
+            </div>
+            <div id="notebook-content" class="p-8 overflow-y-auto space-y-4"></div>
+        </div>
+    </div>
+
+    <footer class="py-8 md:py-12 border-t border-slate-100 text-center text-xs md:text-sm bg-[#1e1b4b]">
+        <p class="text-white/60">© 2026 Paolina — Conçu avec passion pour Open2Europe.</p>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+        let readyModalShown = false;
+
+        function toggleMobileMenu(show) {
+            const menu = document.getElementById('mobile-menu');
+            menu.style.transform = show ? 'translateX(0)' : 'translateX(100%)';
+            document.body.style.overflow = show ? 'hidden' : 'auto';
+        }
+
+        function navigateAndClose(id) {
+            toggleMobileMenu(false);
+            setTimeout(() => {
+                const target = document.getElementById(id);
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            }, 100);
+        }
+
+        function toggleModal(id, show) {
+            const modal = document.getElementById(id);
+            if(show) {
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                if(id === 'modalWorkflows') switchWorkflowTab('past');
+                if(id === 'modalGPTs') switchGPTTab('past');
+                if(id === 'modalNotebook') switchNotebookTab('personal');
+            } else {
+                modal.classList.remove('active');
+                if(!document.getElementById('mobile-menu').style.transform.includes('0')) {
+                    document.body.style.overflow = 'auto';
+                }
+            }
+        }
+        
+        function handleOverlayClick(event, id) {
+            if (event.target.id === id) toggleModal(id, false);
+        }
+
+        const workflowsData = {
+            past: [
+                { title: "Le dashboard GEO automatisé", desc: "Récupère les données via l'API Qwairy grâce à App Script pour générer un reporting complet sur Google Sheets et envoyer un récapitulatif sur Slack.", tools: ["Qwairy API", "Google Apps Script", "Google Sheets", "Slack"], icon: "layout" },
+                { title: "Le chef d’orchestre des leads", desc: "Dès qu'un prospect remplit un formulaire, ses données sont envoyées instantanément au bon endroit : CRM pour le suivi, Slack pour l'alerte et Trello pour l'action.", tools: ["Tally", "Airtable", "Slack", "Trello"], icon: "zap" },
+                { title: "L’aiguilleur de satisfaction client", desc: "Un système qui 'lit' les avis : il envoie un merci automatique aux clients ravis et alerte immédiatement le support en cas de score décevant pour une réactivité maximale.", tools: ["Tally", "Gmail", "Filtres logiques Make"], icon: "heart-handshake" },
+                { title: "L’usine à comptes rendus", desc: "Transforme les notes de rendez-vous en un document PDF professionnel et designé archivé automatiquement.", tools: ["Tally", "Google Docs", "Google Drive", "Slack"], icon: "file-text" },
+                { title: "Le secrétariat commercial 24h/24", desc: "Répond instantanément aux demandes de devis et bloque même un créneau dans votre agenda.", tools: ["Zapier", "Airtable", "Gmail", "Google Calendar"], icon: "clock" }
+            ],
+            future: [
+                { title: "Le dispatcher de presse intelligent", desc: "L'IA analyse l'intention de chaque e-mail entrant : elle distingue le prospect et alerte l'expert sur Slack.", tools: ["n8n", "ChatGPT", "Gmail", "Slack"], icon: "target" },
+                { title: "La fabrique à synthèses stratégiques", desc: "Transforme vos notes de réunion brutes en comptes rendus PDF impeccables et structurés.", tools: ["Make", "Tally", "Google Docs", "Google Drive"], icon: "pen-tool" },
+                { title: "Le radar à talents & influenceurs", desc: "Analyse automatique de dossiers : l'IA extrait les points clés et génère une fiche actionnable.", tools: ["n8n", "PDF-Parse", "Agent IA", "Airtable"], icon: "search" }
+            ]
+        };
+
+        const gptsData = {
+            past: [{
+                title: "Rédacteur SEO pour le blog Les Sherpas",
+                icon: "edit-3",
+                details: [
+                    { label: "Le concept", text: "Un assistant expert entraîné pour produire des articles optimisés SEO / GEO, respectant les caractéristiques de rédaction du blog." },
+                    { label: "La puissance", text: "Intégration d'une base de connaissances complète pour garantir une fidélité totale à la charte éditoriale et aux données de la marque." },
+                    { label: "Utilité", text: "Maximiser la productivité grâce à rédaction rapide, tout en garantissant une cohérence éditoriale parfaite et l’optimisation SEO." }
+                ]
+            }],
+            future: {
+                intro: "À définir selon les résultats de l'enquête interne qui sera mise en place.",
+                items: [
+                    { title: "L’adaptateur culturel", idea: "Adapte vos communiqués aux codes médiatiques de chaque pays européen.", utility: "Maximiser les retombées presse internationales en évitant le \"copier-coller\".", icon: "globe" },
+                    { title: "Le simulateur de crise", idea: "Identifie les failles avant la diffusion d'un message sensible.", utility: "Sécuriser la prise de parole et anticiper les risques de \"bad buzz\".", icon: "alert-triangle" },
+                    { title: "La plume social media", idea: "Génère des posts LinkedIn/X/Insta en respectant l’ADN de chaque client.", utility: "Maintenir une présence constante et de qualité sans effort de rédaction manuel.", icon: "share-2" },
+                    { title: "Le pitch personnalisé", idea: "Analyse les articles d’un journaliste pour rédiger une approche sur-mesure.", utility: "Passer du mailing de masse aux RP haute couture.", icon: "user-check" }
+                ]
+            }
+        };
+
+        const notebookData = {
+            personal: [
+                { title: "Le Guide e-commerce", idea: "Transformer une longue discussion avec une IA en une fiche de synthèse visuelle.", utility: "Retenir l’essentiel d’un sujet complexe sans avoir à relire tout l'historique.", icon: "shopping-bag" },
+                { title: "Le décodeur actualité", idea: "Regrouper des dizaines d'articles techniques sur les nouvelles tendances IA.", utility: "Comprendre un sujet pointu en 2 minutes.", icon: "newspaper" }
+            ],
+            future: [
+                { title: "Le guide de survie IA", idea: "Centraliser tous les tutos et la charte IA de l'agence dans un seul outil.", utility: "Réponse immédiate aux collaborateurs sans solliciter un expert.", icon: "life-buoy" },
+                { title: "Le décrypteur de tendances", idea: "Transformer les rapports de 80 pages en fiches de synthèse rapides.", utility: "Récupérer les chiffres clés en 2 minutes plutôt qu'en 1 heure.", icon: "trending-up" },
+                { title: "Le briefing client audio", idea: "Regrouper l'actu et l'historique d'un client pour en faire un résumé audio ou texte.", utility: "Permettre aux consultants de réviser leur sujet en 5 minutes.", icon: "headphones" }
+            ]
+        };
+
+        function switchWorkflowTab(tab) {
+            document.querySelectorAll('#modalWorkflows .tab-btn-mini').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
+            const container = document.getElementById('workflow-content');
+            let header = tab === 'future' ? `<p class="text-[11px] font-medium text-slate-500 mb-4 italic border-l-2 border-orange-200 pl-4">À définir selon les résultats de l'enquête interne qui sera mise en place.</p>` : '';
+            container.innerHTML = header + workflowsData[tab].map(item => `
+                <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex gap-4">
+                    <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center shrink-0 shadow-sm"><i data-lucide="${item.icon}" class="w-4 h-4 text-[#f47b5f]"></i></div>
+                    <div>
+                        <div class="text-xs font-bold text-[#1e1b4b] mb-1">${item.title}</div>
+                        <div class="text-[10px] text-slate-500 leading-tight">${item.desc}</div>
+                        <div class="flex flex-wrap gap-1 mt-2">${item.tools.map(t => `<span class="px-1.5 py-0.5 bg-white border border-slate-200 rounded-[4px] text-[8px] font-bold text-slate-400">${t}</span>`).join('')}</div>
+                    </div>
+                </div>`).join('');
+            lucide.createIcons();
+        }
+
+        function switchGPTTab(tab) {
+            document.querySelectorAll('#modalGPTs .tab-btn-mini').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-gpt-' + tab).classList.add('active');
+            const container = document.getElementById('gpt-content');
+            if (tab === 'past') {
+                container.innerHTML = gptsData.past.map(item => `
+                    <div class="p-6 bg-slate-50 rounded-3xl border border-slate-100 space-y-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm"><i data-lucide="${item.icon}" class="w-5 h-5 text-[#f47b5f]"></i></div>
+                            <h4 class="font-bold text-[#1e1b4b]">${item.title}</h4>
+                        </div>
+                        <div class="space-y-3">
+                            ${item.details.map(d => `<div><span class="text-[10px] font-black text-[#f47b5f] uppercase tracking-wider block mb-1">${d.label}</span><p class="text-xs text-slate-600">${d.text}</p></div>`).join('')}
+                        </div>
+                    </div>`).join('');
+            } else {
+                container.innerHTML = `<p class="text-[11px] font-medium text-slate-500 mb-4 italic border-l-2 border-orange-200 pl-4">${gptsData.future.intro}</p><div class="grid grid-cols-1 gap-4">${gptsData.future.items.map(item => `<div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex gap-4"><div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center shrink-0 shadow-sm"><i data-lucide="${item.icon}" class="w-4 h-4 text-[#f47b5f]"></i></div><div><div class="text-xs font-bold text-[#1e1b4b] mb-2">${item.title}</div><div class="space-y-1"><div class="text-[10px] text-slate-600"><span class="font-bold text-slate-400 uppercase">L'idée :</span> ${item.idea}</div><div class="text-[10px] text-slate-600"><span class="font-bold text-slate-400 uppercase">Utilité :</span> ${item.utility}</div></div></div></div>`).join('')}</div>`;
+            }
+            lucide.createIcons();
+        }
+
+        function switchNotebookTab(tab) {
+            document.querySelectorAll('#modalNotebook .tab-btn-mini').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-nb-' + tab).classList.add('active');
+            const container = document.getElementById('notebook-content');
+            let header = tab === 'future' ? `<p class="text-[11px] font-medium text-slate-500 mb-4 italic border-l-2 border-orange-200 pl-4">À définir selon les résultats de l'enquête interne qui sera mise en place.</p>` : '';
+            container.innerHTML = header + notebookData[tab === 'personal' ? 'personal' : 'future'].map(item => `
+                <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex gap-4">
+                    <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center shrink-0 shadow-sm"><i data-lucide="${item.icon}" class="w-4 h-4 text-[#f47b5f]"></i></div>
+                    <div>
+                        <div class="text-xs font-bold text-[#1e1b4b] mb-2">${item.title}</div>
+                        <div class="space-y-1">
+                            <div class="text-[10px] text-slate-600"><span class="font-bold text-slate-400 uppercase">L'idée :</span> ${item.idea}</div>
+                            <div class="text-[10px] text-slate-600"><span class="font-bold text-slate-400 uppercase">Utilité :</span> ${item.utility}</div>
+                        </div>
+                    </div>
+                </div>`).join('');
+            lucide.createIcons();
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(e => { 
+                if(e.isIntersecting) {
+                    e.target.classList.add('visible');
+                    if (e.target.id === 'bento-grid' && !readyModalShown) {
+                        toggleModal('modalReady', true);
+                        readyModalShown = true;
+                    }
+                }
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.animate-fade-in').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>
