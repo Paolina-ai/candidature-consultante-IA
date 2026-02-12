@@ -611,9 +611,9 @@
 
             <!-- Documents -->
             <div class="flex flex-wrap justify-center gap-4 mt-12 mb-12 animate-fade-in">
-<button onclick="toggleModal('modalCV', true)" class="flex items-center gap-2 px-5 py-2.5 bg-slate-100 text-[#1e1b4b] rounded-xl text-xs font-bold hover:bg-slate-200 transition-colors">
-    <i data-lucide="file-text" class="w-4 h-4 text-[#f47b5f]"></i>CV
-</button>
+<a href="CV_Paolina_Alternance_Consultante_IA.pdf" download class="flex items-center gap-2 px-5 py-2.5 bg-slate-100 text-[#1e1b4b] rounded-xl text-xs font-bold hover:bg-slate-200 transition-colors">
+    <i data-lucide="file-text" class="w-4 h-4 text-[#f47b5f]"></i>Télécharger le CV de Paolina
+</a>
             </div>
 
             <!-- Infos Pratiques (NOUVEAU) -->
@@ -764,24 +764,6 @@
         </div>
     </div>
     
-    <!-- Modale CV (Aperçu + Téléchargement) -->
-<div id="modalCV" class="modal-overlay" onclick="handleOverlayClick(event, 'modalCV')">
-    <div class="relative w-full max-w-2xl modal-content shadow-2xl flex flex-col max-h-[90vh]">
-        <div class="bg-[#1e1b4b] p-6 text-white flex items-center justify-between shrink-0">
-            <div class="flex items-center gap-3"><i data-lucide="file-text" class="w-5 h-5 text-[#f47b5f]"></i><h3 class="font-bold">Consulter mon CV</h3></div>
-            <button onclick="toggleModal('modalCV', false)" class="p-2 hover:bg-white/10 rounded-full transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
-        </div>
-        <div class="p-6 overflow-y-auto bg-slate-50 flex flex-col items-center">
-            <!-- Image de ton CV -->
-            <img src="CV_Paolina_Alternance_Consultante_IA.pdf" alt="Aperçu du CV" class="w-full max-w-md shadow-2xl border border-slate-200 rounded-lg mb-6" onerror="this.parentElement.innerHTML='<div class=\'text-slate-400 p-12 text-center\'><i data-lucide=\'image-off\' class=\'mx-auto w-12 h-12 mb-4\'></i><p>Image non trouvée.<br>Vérifiez que le fichier CV_Paolina_Alternance_Consultante_IA.jpg est bien sur GitHub.</p></div>'">
-            
-            <!-- Bouton de téléchargement -->
-            <a href="CV_Paolina_Alternance_Consultante_IA.pdf" download class="bg-[#f47b5f] text-white px-8 py-4 rounded-2xl font-bold hover:scale-105 transition-transform flex items-center gap-3 shadow-lg">
-                <i data-lucide="download" class="w-5 h-5"></i> Télécharger le CV
-            </a>
-        </div>
-    </div>
-</div>
 
     <footer class="py-8 md:py-12 border-t border-slate-100 text-center text-xs md:text-sm bg-[#1e1b4b]">
         <p class="text-white/60">© 2026 Paolina — Conçu avec passion pour Open2Europe.</p>
